@@ -1,0 +1,1532 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FitNestPro store API",
+    "version": "1.0.0",
+    "description": "Same-origin Django sessions. All money is IRR. CSRF is mandatory on unsafe methods. Catalog, category, variant, coupon, shipping and image CRUD forms are provided under authenticated /admin/shop/ with Django model permissions. No API accepts client ownership, price or successful payment."
+  },
+  "paths": {
+    "/api/auth/session": {
+      "get": {
+        "summary": "نشست، کوکی CSRF و وضعیت سرویس",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        }
+      }
+    },
+    "/api/auth/request": {
+      "post": {
+        "summary": "ارسال کد واقعی فقط پس از پیکربندی",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mobile": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/verify": {
+      "post": {
+        "summary": "تأیید کد، چرخش نشست و ادغام سبد مهمان",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "pattern": "^[0-9]{4}$"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "summary": "خروج از نشست",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/products": {
+      "get": {
+        "summary": "کاتالوگ؛ پارامترهای offset و category و gender و q",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        }
+      }
+    },
+    "/api/cart": {
+      "get": {
+        "summary": "سبد متعلق به نشست؛ تعداد صفر برای حذف",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        }
+      },
+      "post": {
+        "summary": "سبد متعلق به نشست؛ تعداد صفر برای حذف",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "variantId": {
+                    "type": "integer"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "سبد متعلق به نشست؛ تعداد صفر برای حذف",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "variantId": {
+                    "type": "integer"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "summary": "اطلاعات مشتری؛ تغییر شماره از این مسیر ممنوع",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        }
+      },
+      "patch": {
+        "summary": "اطلاعات مشتری؛ تغییر شماره از این مسیر ممنوع",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "maxLength": 100
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/addresses": {
+      "get": {
+        "summary": "فهرست و افزودن نشانی",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        }
+      },
+      "post": {
+        "summary": "فهرست و افزودن نشانی",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "province": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "street": {
+                    "type": "string"
+                  },
+                  "plate": {
+                    "type": "string"
+                  },
+                  "unit": {
+                    "type": "string"
+                  },
+                  "postal": {
+                    "type": "string"
+                  },
+                  "coordinates": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number"
+                      },
+                      "lng": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  "select": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/addresses/{id}": {
+      "patch": {
+        "summary": "ویرایش، انتخاب یا حذف نشانی متعلق به مشتری",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "province": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "street": {
+                    "type": "string"
+                  },
+                  "plate": {
+                    "type": "string"
+                  },
+                  "unit": {
+                    "type": "string"
+                  },
+                  "postal": {
+                    "type": "string"
+                  },
+                  "coordinates": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number"
+                      },
+                      "lng": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  "select": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "ویرایش، انتخاب یا حذف نشانی متعلق به مشتری",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "province": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "street": {
+                    "type": "string"
+                  },
+                  "plate": {
+                    "type": "string"
+                  },
+                  "unit": {
+                    "type": "string"
+                  },
+                  "postal": {
+                    "type": "string"
+                  },
+                  "coordinates": {
+                    "type": "object",
+                    "properties": {
+                      "lat": {
+                        "type": "number"
+                      },
+                      "lng": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  "select": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shipping": {
+      "get": {
+        "summary": "روش‌های فعال و هزینهٔ ریالی؛ استعلام‌نشده قابل نهایی‌سازی نیست",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        }
+      }
+    },
+    "/api/checkout/quote": {
+      "post": {
+        "summary": "محاسبهٔ دوبارهٔ قیمت و ارسال در سرور",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "addressId": {
+                    "type": "string"
+                  },
+                  "shippingId": {
+                    "type": "integer"
+                  },
+                  "coupon": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/create": {
+      "post": {
+        "summary": "ثبت سفارش و رزرو موجودی؛ بدون اعلام پرداخت موفق",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "addressId": {
+                    "type": "string"
+                  },
+                  "shippingId": {
+                    "type": "integer"
+                  },
+                  "coupon": {
+                    "type": "string"
+                  },
+                  "idempotencyKey": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders": {
+      "get": {
+        "summary": "تاریخچهٔ خصوصی بدون مبلغ فاکتور در فهرست",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        }
+      }
+    },
+    "/api/orders/{id}": {
+      "get": {
+        "summary": "فاکتور شامل مبلغ و نشانی متعلق به همان مشتری",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/orders/{id}/cancel": {
+      "post": {
+        "summary": "لغو سفارش پرداخت‌نشده؛ بازگردانی موجودی دقیقاً یک بار",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/{id}/return": {
+      "post": {
+        "summary": "درخواست مرجوعی در مهلت پس از تحویل؛ بدون بازپرداخت جعلی",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 1000
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/{id}/payment": {
+      "post": {
+        "summary": "آغاز پرداخت غیرفعال؛ پاسخ ۵۰۳ تا اتصال واقعی",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payments/callback": {
+      "get": {
+        "summary": "بازگشت درگاه غیرفعال؛ پارامتر OK موفقیت ایجاد نمی‌کند",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        }
+      }
+    },
+    "/api/reviews": {
+      "get": {
+        "summary": "امتیاز و دیدگاه مشتری برای محصول تحویل‌شده",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        }
+      },
+      "post": {
+        "summary": "امتیاز و دیدگاه مشتری برای محصول تحویل‌شده",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "type": "integer"
+                  },
+                  "rating": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5
+                  },
+                  "comment": {
+                    "type": "string",
+                    "maxLength": 2000
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/manage/dashboard": {
+      "get": {
+        "summary": "دادهٔ مدیریتی dashboard",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "x-django-permission": "shop.view_order"
+      }
+    },
+    "/api/manage/orders": {
+      "get": {
+        "summary": "دادهٔ مدیریتی orders",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "x-django-permission": "shop.view_order"
+      }
+    },
+    "/api/manage/products": {
+      "get": {
+        "summary": "دادهٔ مدیریتی products",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "x-django-permission": "shop.view_product"
+      }
+    },
+    "/api/manage/customers": {
+      "get": {
+        "summary": "دادهٔ مدیریتی customers",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "x-django-permission": "shop.view_customer"
+      }
+    },
+    "/api/manage/events": {
+      "get": {
+        "summary": "دادهٔ مدیریتی events",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "x-django-permission": "shop.view_auditevent"
+      }
+    },
+    "/api/manage/settings": {
+      "get": {
+        "summary": "تنظیمات عمومی بدون افشای کلید؛ ویرایش نیازمند change_storesettings",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "x-django-permission": "shop.view_storesettings"
+      },
+      "patch": {
+        "summary": "تنظیمات عمومی بدون افشای کلید؛ ویرایش نیازمند change_storesettings",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "x-django-permission": "shop.view_storesettings",
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "taxBps": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "orderingEnabled": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/manage/orders/{id}/transition": {
+      "post": {
+        "summary": "فقط paid به processing به shipped به delivered",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "x-django-permission": "shop.change_order",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/manage/inventory/{id}/adjust": {
+      "post": {
+        "summary": "اصلاح موجودی به روش تغییر افزایشی/کاهشی و ثبت رویداد",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "درخواست موفق؛ مبالغ عدد صحیح ریالی هستند."
+          },
+          "400": {
+            "description": "اعتبارسنجی ناموفق"
+          },
+          "403": {
+            "description": "CSRF یا مجوز نامعتبر"
+          },
+          "409": {
+            "description": "تغییر موجودی، وضعیت یا محدودیت سفارش"
+          },
+          "503": {
+            "description": "سرویس تنظیم یا فعال نشده است"
+          }
+        },
+        "x-django-permission": "shop.change_variant",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "delta": {
+                    "type": "integer",
+                    "minimum": -100000,
+                    "maximum": 100000
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "sessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sessionid"
+      }
+    }
+  }
+}

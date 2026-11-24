@@ -1,0 +1,17 @@
+.git
+.private
+.env
+.env.*
+!.env.example
+.venv
+tmp
+output
+design
+**/__pycache__
+backend/media
+backend/staticfiles
+*.png
+*.jpg
+*.pdf
+wom
+!assets/**

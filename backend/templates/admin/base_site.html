@@ -1,0 +1,5 @@
+{% extends "admin/base.html" %}{% load static %}
+{% block title %}{{ title }} | فیت‌نست پرو{% endblock %}
+{% block branding %}<a href="/ops/" class="admin-brand" dir="ltr">Fit<span>Nest</span>Pro</a>{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'ops/admin-theme.css' %}">{% endblock %}
+{% block nav-global %}<a href="/ops/">داشبورد فروشگاه</a>{% endblock %}

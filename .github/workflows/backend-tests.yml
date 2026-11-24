@@ -1,0 +1,35 @@
+name: Backend tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: fitnest_test
+          POSTGRES_DB: fitnest_test
+          # Disposable isolated CI database; not a production credential.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U fitnest_test" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      DJANGO_LOCAL: "1"
+      DB_ENGINE: postgres
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: fitnest_test
+      POSTGRES_DB: fitnest_test
+      POSTGRES_PASSWORD: unused-in-disposable-trust-ci
+      SMS_ENABLED: "0"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r backend/requirements.txt
+      - run: python backend/manage.py makemigrations --check --dry-run
+      - run: python backend/manage.py test shop --verbosity 2
+      - run: node --check assets/store-api.js

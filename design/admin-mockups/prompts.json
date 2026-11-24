@@ -1,0 +1,50 @@
+[
+  {
+    "file": "01-dashboard.png",
+    "useCase": "ui-mockup",
+    "screen": "داشبورد",
+    "tool": "built-in image_gen",
+    "designBrief": "FitNestPro Persian RTL ecommerce administration. Dark charcoal #111015, purple #aa76ed, lime #d7fa63. Refined Persian sans-serif, right sidebar, spacious fine-bordered functional desktop interface. داشبورد. Illustrative data only; flat screen, no device mockup.",
+    "note": "Concept reference; generated text may contain minor visual errors. Interactive UI uses actual HTML and database content."
+  },
+  {
+    "file": "02-orders.png",
+    "useCase": "ui-mockup",
+    "screen": "فهرست سفارش‌ها",
+    "tool": "built-in image_gen",
+    "designBrief": "FitNestPro Persian RTL ecommerce administration. Dark charcoal #111015, purple #aa76ed, lime #d7fa63. Refined Persian sans-serif, right sidebar, spacious fine-bordered functional desktop interface. فهرست سفارش‌ها. Illustrative data only; flat screen, no device mockup.",
+    "note": "Concept reference; generated text may contain minor visual errors. Interactive UI uses actual HTML and database content."
+  },
+  {
+    "file": "03-order-detail.png",
+    "useCase": "ui-mockup",
+    "screen": "جزئیات سفارش",
+    "tool": "built-in image_gen",
+    "designBrief": "FitNestPro Persian RTL ecommerce administration. Dark charcoal #111015, purple #aa76ed, lime #d7fa63. Refined Persian sans-serif, right sidebar, spacious fine-bordered functional desktop interface. جزئیات سفارش. Illustrative data only; flat screen, no device mockup.",
+    "note": "Concept reference; generated text may contain minor visual errors. Interactive UI uses actual HTML and database content."
+  },
+  {
+    "file": "04-product-edit.png",
+    "useCase": "ui-mockup",
+    "screen": "ویرایش محصول و گالری",
+    "tool": "built-in image_gen",
+    "designBrief": "FitNestPro Persian RTL ecommerce administration. Dark charcoal #111015, purple #aa76ed, lime #d7fa63. Refined Persian sans-serif, right sidebar, spacious fine-bordered functional desktop interface. ویرایش محصول و گالری. Illustrative data only; flat screen, no device mockup.",
+    "note": "Concept reference; generated text may contain minor visual errors. Interactive UI uses actual HTML and database content."
+  },
+  {
+    "file": "05-customers.png",
+    "useCase": "ui-mockup",
+    "screen": "مشتریان",
+    "tool": "built-in image_gen",
+    "designBrief": "FitNestPro Persian RTL ecommerce administration. Dark charcoal #111015, purple #aa76ed, lime #d7fa63. Refined Persian sans-serif, right sidebar, spacious fine-bordered functional desktop interface. مشتریان. Illustrative data only; flat screen, no device mockup.",
+    "note": "Concept reference; generated text may contain minor visual errors. Interactive UI uses actual HTML and database content."
+  },
+  {
+    "file": "06-settings.png",
+    "useCase": "ui-mockup",
+    "screen": "تنظیمات",
+    "tool": "built-in image_gen",
+    "designBrief": "FitNestPro Persian RTL ecommerce administration. Dark charcoal #111015, purple #aa76ed, lime #d7fa63. Refined Persian sans-serif, right sidebar, spacious fine-bordered functional desktop interface. تنظیمات. Illustrative data only; flat screen, no device mockup.",
+    "note": "Concept reference; generated text may contain minor visual errors. Interactive UI uses actual HTML and database content."
+  }
+]

@@ -1,0 +1,20 @@
+# Place inside an HTTPS server block with a real certificate. Do not expose gunicorn directly.
+# proxy_set_header overwrites untrusted incoming headers.
+location / {
+    proxy_pass http://127.0.0.1:8000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 30s;
+    client_max_body_size 6m;
+}
+# Mount the media volume here before enabling this route. Treat uploads as data, never scripts.
+location /media/ {
+    alias /srv/fitnest/media/;
+    autoindex off;
+    add_header X-Content-Type-Options nosniff always;
+    add_header Content-Security-Policy "default-src 'none'; sandbox" always;
+    limit_except GET HEAD { deny all; }
+}
+# HTTP server: redirect to the fixed configured HTTPS host, never an arbitrary Host header.

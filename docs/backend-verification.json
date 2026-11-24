@@ -1,0 +1,54 @@
+{
+  "status": "local-verification-passed-production-checks-pending",
+  "baseCommit": "c770df0a5d395ac978f3e0c43ab6400526da8144",
+  "djangoTests": {
+    "discovered": 35,
+    "passed": 34,
+    "skipped": 1,
+    "database": "SQLite local test database",
+    "skipReason": "Concurrent checkout test requires PostgreSQL SELECT FOR UPDATE"
+  },
+  "legacyOtpTestsPassed": 10,
+  "djangoSystemCheck": "PASS",
+  "migrationDrift": "none",
+  "javascriptSyntax": "PASS",
+  "credentialPatternScan": "PASS (scoped source scan, not a guarantee)",
+  "images": {
+    "losslessPixelChecks": 6,
+    "byteIdenticalOriginalChecks": 4,
+    "qualityChanged": false
+  },
+  "browser": "pending Chrome verification",
+  "postgresAndCompose": "Not executed: Docker and PostgreSQL are not installed on this machine. CI configuration and concurrency test are provided.",
+  "externalServices": {
+    "sms": "disabled; no real messages sent",
+    "payment": "disabled; no real transactions",
+    "shipping": "Tipax configured as inactive until a real fee/contract is supplied",
+    "deployment": "not published"
+  },
+  "remainingBeforeProduction": [
+    "Run PostgreSQL test suite and verify concurrent stock reservations",
+    "Build and test Compose on a Docker-capable machine",
+    "Run HTTPS deployment checks and backup/restore rehearsal",
+    "Create private administrative account and assign roles",
+    "Configure and explicitly authorize SMS activation and delivery test",
+    "Select and implement real gateway adapter; verify callbacks and refunds",
+    "Set real catalog, stock, taxes, shipping and return policy"
+  ],
+  "httpSmoke": {
+    "storefront": 200,
+    "catalog": 200,
+    "storeAdapterJavaScript": 200,
+    "storeAdapterStyles": 200,
+    "heroImage": 200,
+    "operationsJavaScript": 200,
+    "adminLogin": 200,
+    "privateSecretPath": 404
+  },
+  "fixedDuringVerification": [
+    "Corrected original asset URL prefix in Django static middleware",
+    "Preserved unpaid carts and enforced one active pending order",
+    "Prevented stale admin price edits from overwriting stock",
+    "Used one pricing snapshot for order totals and line amounts"
+  ]
+}

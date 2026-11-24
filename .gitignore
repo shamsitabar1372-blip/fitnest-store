@@ -6,3 +6,9 @@ __pycache__/
 *.pyc
 tmp/
 output/
+.venv/
+backend/staticfiles/
+backend/media/
+*.sqlite3
+*.dump
+*.log

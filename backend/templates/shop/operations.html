@@ -1,0 +1,15 @@
+{% load static %}<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>مدیریت | FitNestPro</title><link rel="stylesheet" href="/assets/fonts/fonts.css"><link rel="stylesheet" href="{% static 'ops/panel.css' %}"><script defer src="{% static 'ops/panel.js' %}"></script></head><body>
+<aside class="sidebar"><a class="brand" href="/" dir="ltr">Fit<span>Nest</span><small>Pro</small></a><p>مدیریت فروشگاه</p><nav aria-label="بخش‌های مدیریت">
+{% if perms.shop.view_order %}<button data-page="dashboard">◈ داشبورد</button><button data-page="orders">▤ سفارش‌ها</button>{% endif %}
+{% if perms.shop.view_product %}<button data-page="products">◇ محصولات</button>{% endif %}
+{% if perms.shop.view_category %}<a href="/admin/shop/category/">▦ دسته‌بندی‌ها</a>{% endif %}
+{% if perms.shop.view_variant %}<button data-page="inventory">◫ موجودی انبار</button>{% endif %}
+{% if perms.shop.view_customer %}<button data-page="customers">◎ مشتریان</button>{% endif %}
+{% if perms.shop.view_coupon %}<a href="/admin/shop/coupon/">٪ تخفیف‌ها</a>{% endif %}
+{% if perms.shop.view_order %}<button data-page="reports">↗ گزارش فروش</button>{% endif %}
+{% if perms.shop.view_auditevent %}<button data-page="events">◷ رویدادها</button>{% endif %}
+{% if perms.shop.view_storesettings %}<button data-page="settings">⚙ تنظیمات</button>{% endif %}
+</nav><a class="store-link" href="/">بازگشت به فروشگاه</a><a href="/admin/password_change/">تغییر رمز مدیریت</a></aside>
+<main><header><div><small>FITNESTPRO / MANAGEMENT</small><h1 id="page-title">داشبورد</h1></div><div class="identity">{{ request.user.display_name|default:request.user.username }}<form method="post" action="/admin/logout/">{% csrf_token %}<button>خروج</button></form></div></header><p class="notice">ارقام این پنل از دیتابیس دریافت می‌شوند. درگاه پرداخت هنوز فعال نیست.</p><div id="status" role="status" aria-live="polite"></div><section id="content" aria-label="محتوای مدیریت"></section></main>
+<dialog id="order-dialog"><button id="dialog-close" aria-label="بستن">×</button><div id="order-detail"></div></dialog>
+</body></html>

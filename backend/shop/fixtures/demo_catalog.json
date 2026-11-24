@@ -1,0 +1,218 @@
+[
+  {
+    "category": "supplements",
+    "supplementCategory": "protein",
+    "name": "ایزو وی",
+    "english": "ISO WHEY",
+    "subtitle": "پروتئین وی ایزوله",
+    "group": "daily",
+    "type": "پروتئین ورزشی",
+    "tag": "پرفروش",
+    "weight": "بسته‌بندی نمونه",
+    "demoPriceRial": 24500000
+  },
+  {
+    "category": "supplements",
+    "supplementCategory": "protein",
+    "name": "پیور پروتئین",
+    "english": "PURE PROTEIN",
+    "subtitle": "پروتئین وی",
+    "group": "daily",
+    "type": "پروتئین ورزشی",
+    "tag": "محبوب",
+    "weight": "بسته‌بندی نمونه",
+    "demoPriceRial": 21500000
+  },
+  {
+    "category": "supplements",
+    "supplementCategory": "protein",
+    "name": "گلدن وی",
+    "english": "GOLDEN WHEY",
+    "subtitle": "پروتئین وی روزمره",
+    "group": "recovery",
+    "type": "پروتئین ورزشی",
+    "tag": "روزانه",
+    "weight": "بسته‌بندی نمونه",
+    "demoPriceRial": 18500000
+  },
+  {
+    "category": "supplements",
+    "supplementCategory": "protein",
+    "name": "مس وی",
+    "english": "MASS WHEY",
+    "subtitle": "پروتئین افزایش حجم",
+    "group": "mass",
+    "type": "پروتئین ورزشی",
+    "tag": "تمرینی",
+    "weight": "بسته‌بندی نمونه",
+    "demoPriceRial": 19500000
+  },
+  {
+    "category": "supplements",
+    "supplementCategory": "creatine",
+    "name": "کراتین مونوهیدرات",
+    "english": "CREATINE MONOHYDRATE",
+    "subtitle": "مکمل کراتین نمونه",
+    "type": "مکمل ورزشی",
+    "tag": "نمونه",
+    "weight": "بسته‌بندی نمونه",
+    "demoPriceRial": 13500000
+  },
+  {
+    "category": "supplements",
+    "supplementCategory": "creatine",
+    "name": "کراتین",
+    "english": "CREATINE",
+    "subtitle": "محصول نمونهٔ دستهٔ کراتین",
+    "type": "مکمل ورزشی",
+    "tag": "نمونه",
+    "weight": "بسته‌بندی نمونه",
+    "demoPriceRial": 11000000
+  },
+  {
+    "category": "supplements",
+    "supplementCategory": "vitamine",
+    "name": "مولتی‌ویتامین",
+    "english": "MULTIVITAMIN",
+    "subtitle": "مکمل ویتامینی نمونه",
+    "type": "مکمل ورزشی",
+    "tag": "نمونه",
+    "weight": "بسته‌بندی نمونه",
+    "demoPriceRial": 6200000
+  },
+  {
+    "category": "supplements",
+    "supplementCategory": "vitamine",
+    "name": "ویتامین D3",
+    "english": "VITAMIN D3",
+    "subtitle": "محصول نمونهٔ دستهٔ ویتامین‌ها",
+    "type": "مکمل ورزشی",
+    "tag": "نمونه",
+    "weight": "بسته‌بندی نمونه",
+    "demoPriceRial": 4500000
+  },
+  {
+    "category": "supplements",
+    "supplementCategory": "bars",
+    "name": "پروتئین بار",
+    "english": "PROTEIN BAR",
+    "subtitle": "میان‌وعدهٔ نمونه",
+    "type": "اسنک ورزشی",
+    "tag": "نمونه",
+    "weight": "بسته‌بندی نمونه",
+    "demoPriceRial": 1200000
+  },
+  {
+    "category": "supplements",
+    "supplementCategory": "bars",
+    "name": "انرژی بار",
+    "english": "ENERGY BAR",
+    "subtitle": "محصول نمونهٔ دستهٔ اسنک",
+    "type": "اسنک ورزشی",
+    "tag": "نمونه",
+    "weight": "بسته‌بندی نمونه",
+    "demoPriceRial": 950000
+  },
+  {
+    "category": "supplements",
+    "supplementCategory": "pre-workout",
+    "name": "پری‌ورک‌اوت",
+    "english": "PRE-WORKOUT",
+    "subtitle": "مکمل پیش از تمرین نمونه",
+    "type": "مکمل ورزشی",
+    "tag": "نمونه",
+    "weight": "بسته‌بندی نمونه",
+    "demoPriceRial": 12500000
+  },
+  {
+    "category": "supplements",
+    "supplementCategory": "pre-workout",
+    "name": "پودر پیش‌تمرین",
+    "english": "PRE-TRAINING",
+    "subtitle": "محصول نمونهٔ دستهٔ پیش از تمرین",
+    "type": "مکمل ورزشی",
+    "tag": "نمونه",
+    "weight": "بسته‌بندی نمونه",
+    "demoPriceRial": 9500000
+  },
+  {
+    "category": "clothing",
+    "name": "تی‌شرت تمرینی",
+    "english": "TRAINING TEE",
+    "subtitle": "لباس سبک برای تمرین روزانه",
+    "type": "پوشاک ورزشی",
+    "tag": "نمونه",
+    "mark": "TEE",
+    "demoPriceRial": 8900000
+  },
+  {
+    "category": "clothing",
+    "name": "شلوارک ورزشی",
+    "english": "TRAINING SHORTS",
+    "subtitle": "آزادی حرکت در تمرین",
+    "type": "پوشاک ورزشی",
+    "tag": "نمونه",
+    "mark": "SHORTS",
+    "demoPriceRial": 9900000
+  },
+  {
+    "category": "clothing",
+    "name": "لگ ورزشی",
+    "english": "TRAINING LEGGINGS",
+    "subtitle": "پوشاک فیتنس زنانه",
+    "type": "پوشاک ورزشی",
+    "tag": "نمونه",
+    "mark": "LEGGINGS",
+    "demoPriceRial": 12900000
+  },
+  {
+    "category": "clothing",
+    "name": "هودی تمرینی",
+    "english": "TRAINING HOODIE",
+    "subtitle": "لایهٔ گرم برای قبل و بعد تمرین",
+    "type": "پوشاک ورزشی",
+    "tag": "نمونه",
+    "mark": "HOODIE",
+    "demoPriceRial": 17900000
+  },
+  {
+    "category": "gear",
+    "name": "شیکر ورزشی",
+    "english": "SPORTS SHAKER",
+    "subtitle": "برای نوشیدنی‌های ورزشی",
+    "type": "تجهیزات تمرین",
+    "tag": "نمونه",
+    "mark": "SHAKER",
+    "demoPriceRial": 4500000
+  },
+  {
+    "category": "gear",
+    "name": "دستکش تمرین",
+    "english": "TRAINING GLOVES",
+    "subtitle": "لوازم کاربردی تمرین قدرتی",
+    "type": "تجهیزات تمرین",
+    "tag": "نمونه",
+    "mark": "GLOVES",
+    "demoPriceRial": 6200000
+  },
+  {
+    "category": "gear",
+    "name": "بند لیفت",
+    "english": "LIFTING STRAPS",
+    "subtitle": "اکسسوری تمرین با وزنه",
+    "type": "تجهیزات تمرین",
+    "tag": "نمونه",
+    "mark": "STRAPS",
+    "demoPriceRial": 3900000
+  },
+  {
+    "category": "gear",
+    "name": "کش تمرینی",
+    "english": "RESISTANCE BAND",
+    "subtitle": "لوازم تمرین مقاومتی",
+    "type": "تجهیزات تمرین",
+    "tag": "نمونه",
+    "mark": "BAND",
+    "demoPriceRial": 3300000
+  }
+]
