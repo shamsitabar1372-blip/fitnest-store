@@ -1,0 +1,176 @@
+{
+  "images": {
+    "hero-first": {
+      "source": "Men.jpg",
+      "originalBytes": 1116882,
+      "originalSize": [
+        5472,
+        3648
+      ],
+      "unchangedOriginal": true,
+      "variants": [
+        {
+          "src": "assets/optimized/slide-1-main-original.f7018c05f7.jpg",
+          "width": 5472,
+          "height": 3648,
+          "bytes": 1116882
+        }
+      ]
+    },
+    "hero-shadow": {
+      "source": "wom",
+      "originalBytes": 42800,
+      "originalSize": [
+        970,
+        647
+      ],
+      "unchangedOriginal": true,
+      "variants": [
+        {
+          "src": "assets/optimized/slide-1-overlay-original.1bdc2441b8.jpg",
+          "width": 970,
+          "height": 647,
+          "bytes": 42800
+        }
+      ]
+    },
+    "category-supplements": {
+      "source": "Supp.avif",
+      "originalBytes": 244909,
+      "originalSize": [
+        2000,
+        1125
+      ],
+      "unchangedOriginal": true,
+      "variants": [
+        {
+          "src": "assets/optimized/category-supplements-original.55c1dcee15.avif",
+          "width": 2000,
+          "height": 1125,
+          "bytes": 244909
+        }
+      ]
+    },
+    "category-gear": {
+      "source": "GEATT.jpg",
+      "originalBytes": 3165794,
+      "originalSize": [
+        4380,
+        5475
+      ],
+      "unchangedOriginal": true,
+      "variants": [
+        {
+          "src": "assets/optimized/category-gear-original.8f42bcc6d1.jpg",
+          "width": 4380,
+          "height": 5475,
+          "bytes": 3165794
+        }
+      ]
+    },
+    "category-clothing": {
+      "source": "Fitness coaches sportswear photograph – 18 Nov 2026, 2.36 am.png",
+      "originalBytes": 2673264,
+      "originalSize": [
+        1456,
+        1088
+      ],
+      "variants": [
+        {
+          "src": "assets/optimized/category-clothing-lossless.ff3c804b6a.webp",
+          "width": 1456,
+          "height": 1088,
+          "bytes": 1366200
+        }
+      ],
+      "lossless": true
+    },
+    "hero-nutrition": {
+      "source": "Nutri end.png",
+      "originalBytes": 2525079,
+      "originalSize": [
+        1776,
+        896
+      ],
+      "variants": [
+        {
+          "src": "assets/optimized/hero-nutrition-lossless.2f15109678.webp",
+          "width": 1776,
+          "height": 896,
+          "bytes": 1222526
+        }
+      ],
+      "lossless": true
+    },
+    "hero-fitness": {
+      "source": "New fit.png",
+      "originalBytes": 2095012,
+      "originalSize": [
+        1776,
+        896
+      ],
+      "variants": [
+        {
+          "src": "assets/optimized/hero-fitness-lossless.0faedaa5d8.webp",
+          "width": 1776,
+          "height": 896,
+          "bytes": 1111800
+        }
+      ],
+      "lossless": true
+    },
+    "banner-men": {
+      "source": "Men’s sportswear hero banner.png",
+      "originalBytes": 1645434,
+      "originalSize": [
+        1776,
+        896
+      ],
+      "variants": [
+        {
+          "src": "assets/optimized/banner-men-lossless.73c3609a37.webp",
+          "width": 1776,
+          "height": 896,
+          "bytes": 977466
+        }
+      ],
+      "lossless": true
+    },
+    "banner-women": {
+      "source": "Women’s sportswear hero banner.png",
+      "originalBytes": 1576640,
+      "originalSize": [
+        1776,
+        896
+      ],
+      "variants": [
+        {
+          "src": "assets/optimized/banner-women-lossless.f1aac725e3.webp",
+          "width": 1776,
+          "height": 896,
+          "bytes": 948828
+        }
+      ],
+      "lossless": true
+    },
+    "banner-gear": {
+      "source": "GEAR fitness website hero banner – 19 Nov 2026, 12.06 am.png",
+      "originalBytes": 2056896,
+      "originalSize": [
+        1776,
+        896
+      ],
+      "variants": [
+        {
+          "src": "assets/optimized/banner-gear-lossless.7896451735.webp",
+          "width": 1776,
+          "height": 896,
+          "bytes": 1109864
+        }
+      ],
+      "lossless": true
+    }
+  },
+  "fonts": 4,
+  "fontErrors": []
+}

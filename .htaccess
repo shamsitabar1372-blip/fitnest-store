@@ -1,0 +1,32 @@
+# Apache/LiteSpeed shared hosting. HTML revalidates; assets stay cached for a week.
+Options -Indexes
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript application/json image/svg+xml
+</IfModule>
+<IfModule mod_headers.c>
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'; frame-src 'none'; form-action 'self'; script-src 'self' https://static.neshan.org; script-src-attr 'none'; style-src 'self' 'unsafe-inline' https://static.neshan.org; img-src 'self' data: blob: https://*.neshan.org; font-src 'self' https://static.neshan.org; connect-src 'self' https://*.neshan.org; worker-src 'self' blob:; media-src 'none'"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(self), payment=()"
+  Header always set Cross-Origin-Resource-Policy "same-origin"
+  <FilesMatch "\.(css|js|woff2|ttf|webp|avif|svg)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+# Keep local tooling and reports out of the public web root.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^(?:tmp|output|scripts)/ - [F,L]
+  RewriteRule ^(?:serve\.py|PERFORMANCE\.md)$ - [F,L]
+</IfModule>
+
+# This deployment is static: only the entry page and approved asset types are public.
+<IfModule mod_rewrite.c>
+  RewriteRule ^\.well-known/acme-challenge/[A-Za-z0-9_-]+$ - [L]
+  RewriteRule (^|/)\. - [F,L]
+  RewriteRule !^(?:$|index\.html$|assets/[A-Za-z0-9_./-]+\.(?:css|js|svg|jpg|jpeg|png|webp|avif|woff2|woff|ttf|ico|txt)$) - [F,L]
+</IfModule>
