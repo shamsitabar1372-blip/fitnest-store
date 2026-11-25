@@ -33,3 +33,7 @@ jobs:
       - run: python backend/manage.py makemigrations --check --dry-run
       - run: python backend/manage.py test shop --verbosity 2
       - run: node --check assets/store-api.js
+      - run: node --check backend/static/ops/panel.js
+      - run: node scripts/test-map-address.cjs
+      - run: node scripts/test-checkout-quote.cjs
+      - run: node scripts/test-admin-filters.cjs

@@ -1518,6 +1518,104 @@
           }
         }
       }
+    },
+    "/api/auth/local-test": {
+      "post": {
+        "summary": "Local-only, loopback-only superuser preview customer session; not SMS verification",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "x-local-only": true,
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Non-staff local test customer, no verified phone, preserved cart"
+          },
+          "403": {
+            "description": "Missing superuser or CSRF"
+          },
+          "404": {
+            "description": "Not available outside loopback local mode"
+          }
+        }
+      }
+    },
+    "/api/maps/reverse": {
+      "post": {
+        "summary": "Authenticated server-side Neshan point-to-address lookup; disabled without real server credentials and explicit enable flag",
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lat": {
+                    "type": "number",
+                    "minimum": 24,
+                    "maximum": 41
+                  },
+                  "lng": {
+                    "type": "number",
+                    "minimum": 44,
+                    "maximum": 64
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Only province, city and street are returned"
+          },
+          "401": {
+            "description": "Login required"
+          },
+          "400": {
+            "description": "Invalid coordinate"
+          },
+          "503": {
+            "description": "Not configured or provider unavailable"
+          }
+        }
+      }
     }
   },
   "components": {

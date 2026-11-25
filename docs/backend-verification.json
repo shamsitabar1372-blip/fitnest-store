@@ -2,13 +2,13 @@
   "status": "local-verification-passed-production-checks-pending",
   "baseCommit": "c770df0a5d395ac978f3e0c43ab6400526da8144",
   "djangoTests": {
-    "discovered": 35,
-    "passed": 34,
+    "discovered": 52,
+    "passed": 51,
     "skipped": 1,
     "database": "SQLite local test database",
     "skipReason": "Concurrent checkout test requires PostgreSQL SELECT FOR UPDATE"
   },
-  "legacyOtpTestsPassed": 10,
+  "legacyOtpTestsPassed": 13,
   "djangoSystemCheck": "PASS",
   "migrationDrift": "none",
   "javascriptSyntax": "PASS",
@@ -18,7 +18,10 @@
     "byteIdenticalOriginalChecks": 4,
     "qualityChanged": false
   },
-  "browser": "pending Chrome verification",
+  "browser": "User confirmed main storefront, account, address and basket flows in Chrome. This audit used API and DOM-double regression tests, not a new real-browser or mobile layout run.",
+  "auditDate": "2026-11-25",
+  "httpSmokeChecksPassed": 36,
+  "frontendRegressionSuitesPassed": 3,
   "postgresAndCompose": "Not executed: Docker and PostgreSQL are not installed on this machine. CI configuration and concurrency test are provided.",
   "externalServices": {
     "sms": "disabled; no real messages sent",
@@ -50,5 +53,19 @@
     "Preserved unpaid carts and enforced one active pending order",
     "Prevented stale admin price edits from overwriting stock",
     "Used one pricing snapshot for order totals and line amounts"
-  ]
+  ],
+  "localCustomerPreview": {
+    "enabledOnly": "explicit local mode, loopback peer and host, authenticated superuser, CSRF",
+    "identity": "test customer without verified mobile or usable password",
+    "payments": "real payment prohibited for test orders",
+    "tests": "local access, remote/production denial, CSRF, basket preservation and payment denial passed"
+  },
+  "mapReverse": {
+    "adapter": "server-side, authenticated and CSRF-protected",
+    "liveProviderTest": "2026-11-25: reverse lookup succeeded with the locally supplied key; province, city and street received. No key or address logged.",
+    "credentials": "server environment or local-only private key file; not returned to browser",
+    "tests": "disabled provider, filtered response, invalid coordinates, anonymous denial, local admin configuration access, verified TLS and sanitized errors passed; JS confirmation populates address and preserves concurrent user edits",
+    "tls": "Windows CryptoAPI via truststore; certificate and hostname verification remain enabled",
+    "frontendRegression": "node scripts/test-map-address.cjs: PASS"
+  }
 }

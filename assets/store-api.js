@@ -1,7 +1,7 @@
 /* Django storefront adapter. The old static preview remains independent. */
 'use strict';
 if(document.documentElement.dataset.storeApi==='true'){
- const state={catalog:[],cart:{items:[],subtotal:0},profile:{name:'',mobile:'',addresses:[]},orders:[],reviews:[],shipping:[],quote:null,ready:false};
+ const state={catalog:[],cart:{items:[],subtotal:0},profile:{name:'',mobile:'',addresses:[]},orders:[],reviews:[],shipping:[],quote:null,quoteRevision:0,ready:false};
  const node=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
  const money=amount=>formatToman(amount/10);
  const csrfToken=()=>document.cookie.split('; ').find(x=>x.startsWith('csrftoken='))?.slice(10)||'';
@@ -12,7 +12,8 @@ if(document.documentElement.dataset.storeApi==='true'){
  const notify=message=>{cartStatus.textContent=message;profileStatus.textContent=message;profileStatus.hidden=false;};
  const frontProduct=p=>({id:p.id,category:p.parentCategory,name:p.name,english:String(p.title).replace(/[<>"`\\]/g,''),gender:p.gender||null,subtitle:p.description,supplementCategory:p.category,mark:String(p.attributes.mark||'').replace(/[^A-Z0-9 -]/g,''),tag:'نمونه',inStock:p.variants.some(v=>v.stock>0),server:p});
  const findProduct=(title,gender)=>products.find(p=>p.english===title&&(!gender||p.gender===gender));
- const selectedVariant=()=>activeProduct?.server?.variants.find(v=>activeProduct.category!=='clothing'||(v.color===document.getElementById('clothing-color').value&&v.size===document.getElementById('clothing-size').value));
+ const defaultVariant=p=>p?.server?.variants.find(v=>v.stock>0)||p?.server?.variants[0];
+ const selectedVariant=()=>activeProduct?.category==='clothing'?activeProduct.server.variants.find(v=>v.color===document.getElementById('clothing-color').value&&v.size===document.getElementById('clothing-size').value):defaultVariant(activeProduct);
  function applyCart(data){state.cart=data;cartItems=data.items.map(i=>({...i,variantId:i.variantId}));cartCode=data.items.length?'سبد ذخیره‌شده در سرور':'';updateCartView();if(data.pendingOrder)cartStatus.textContent='سفارش '+data.pendingOrder.code+' در انتظار پرداخت است؛ سبد محفوظ مانده است.';}
  async function refreshAccount(){
   if(!authenticatedUser)return;
@@ -26,7 +27,29 @@ if(document.documentElement.dataset.storeApi==='true'){
  migrateLegacyCart=()=>{};
  switchCartOwner=()=>{cartItems=[];updateCartView();api('cart').then(applyCart).catch(e=>notify(e.message));};
  transferGuestCart=()=>switchCartOwner();
- authApi=async(path,data)=>{const result=await api('auth/'+path,data);if(path==='verify'){authenticatedUser=result.user;await refreshAccount();}return result;};
+ authApi=async(path,data)=>{const result=await api('auth/'+path,data);if(path==='verify'){authenticatedUser=result.user;await refreshAccount();}if(path==='logout')document.getElementById('local-test-banner')?.remove();return result;};
+ const acceptRealUser=acceptVerifiedUser;
+ acceptVerifiedUser=(user,mergeGuest=false)=>{
+  if(user?.isTest!==true){document.getElementById('local-test-banner')?.remove();return acceptRealUser(user,mergeGuest);}
+  if(!/^[a-f0-9]{32}$/.test(user.id)||user.mobile!==null)throw Error('پاسخ حساب آزمایشی معتبر نیست.');
+  authenticatedUser=user;accountIdentity={name:state.profile.name||'مشتری آزمایشی محلی',mobile:''};savedAddresses=state.profile.addresses;
+  document.getElementById('account-mobile').readOnly=true;document.getElementById('account-mobile').placeholder='شماره در حالت آزمایشی تأیید نشده است';
+  profileToggle.classList.add('is-signed-in');profileToggle.setAttribute('aria-label','حساب مشتری آزمایشی محلی');document.getElementById('profile-icon').innerHTML=iconMarkup.profileActive;
+  profileRegister.hidden=true;profileWelcome.hidden=true;profileSuccess.hidden=false;syncProfileLinks();
+  document.getElementById('profile-success-title').textContent='حساب مشتری آزمایشی';profileSuccess.querySelector('p').textContent='فقط برای آزمایش محلی؛ شمارهٔ موبایل تأیید نشده و پرداخت واقعی غیرفعال است.';
+  if(!document.getElementById('local-test-banner')){const banner=node('p','حالت آزمایشی محلی · شمارهٔ موبایل تأیید نشده · پرداخت واقعی غیرفعال','local-test-banner');banner.id='local-test-banner';banner.setAttribute('role','status');document.querySelector('main').before(banner);}
+  authMessage('وارد حساب آزمایشی محلی شدید.');switchCartOwner();if(pendingCheckout)openCheckout();
+ };
+ function enableLocalTestLogin(){
+  for(const host of [profileWelcome,profileRegister]){
+   const existing=host.querySelector('.local-test-entry');if(existing){existing.hidden=false;continue;}
+   const group=node('div',undefined,'local-test-entry'),button=node('button','ورود آزمایشی محلی','local-test-login');button.type='button';
+   group.append(node('p','مخصوص مدیر این سیستم؛ بدون پیامک و بدون تأیید شماره. ورود، حساب همین مرورگر را به مشتری آزمایشی تغییر می‌دهد.'),button);
+   button.addEventListener('click',async()=>{button.disabled=true;try{const result=await api('auth/local-test',{});authenticatedUser=result.user;await refreshAccount();acceptVerifiedUser(result.user);document.querySelectorAll('.local-test-entry').forEach(entry=>entry.hidden=true);}catch(error){authMessage(error.message,true);}finally{button.disabled=false;}});
+   host.append(group);
+  }
+ }
+ profileToggle.addEventListener('click',()=>{api('auth/session').then(result=>{if(result.localTestLoginAvailable)enableLocalTestLogin();else document.querySelectorAll('.local-test-entry').forEach(entry=>entry.hidden=true);}).catch(()=>{});});
  const originalLoad=loadAccountFields;
  loadAccountFields=()=>{originalLoad();document.getElementById('account-contact-status').textContent='اطلاعات در حساب شما روی سرور ذخیره می‌شود.';if(authenticatedUser)refreshAccount().then(()=>{originalLoad();document.getElementById('account-contact-status').textContent='اطلاعات حساب از سرور دریافت شد.';}).catch(e=>notify(e.message));};
  function cartTitle(item){return [item.gender==='men'?"MEN'S":item.gender==='women'?"WOMEN'S":'',item.title].filter(Boolean).join(' ');}
@@ -38,13 +61,13 @@ if(document.documentElement.dataset.storeApi==='true'){
    const row=node('article',undefined,'cart-line'),copy=node('div',undefined,'cart-line-copy'),tools=node('div',undefined,'cart-line-tools');
    copy.append(node('small',item.category==='clothing'?(item.gender==='men'?"Men's Clothing":"Women's Clothing"):item.category),node('strong',item.title),node('span',[item.color,item.size].filter(Boolean).join(' · '),'cart-line-price'),node('span',money(item.unitPrice)+' برای هر عدد','cart-line-price'));
    if(!item.available)copy.append(node('small','موجودی تغییر کرده؛ گزینه یا تعداد را اصلاح کنید.'));
-   for(const [text,delta] of [['−',-1],['+',1],['حذف',-item.quantity]]){const b=node('button',text,'cart-quantity-button');b.type='button';b.setAttribute('aria-label',text+' '+item.title);b.addEventListener('click',async()=>{b.disabled=true;try{applyCart(await api('cart',{variantId:item.variantId,quantity:item.quantity+delta}));cartStatus.textContent='سبد روی سرور ذخیره شد.';}catch(e){cartStatus.textContent=e.message;b.disabled=false;}});if(text==='+')tools.append(node('output',faDigits(item.quantity),'cart-quantity'));tools.append(b);}
+   for(const [text,delta] of [['−',-1],['+',1],['حذف',-item.quantity]]){const removing=text==='حذف',b=node('button',removing?undefined:text,removing?'cart-remove-icon':'cart-quantity-button');b.type='button';b.setAttribute('aria-label',(removing?'حذف از سبد خرید: ':text+' ')+item.title);if(removing){b.title='حذف از سبد خرید';b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 6h18M9 6V4h6v2M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg>';}b.addEventListener('click',async()=>{b.disabled=true;try{applyCart(await api('cart',{variantId:item.variantId,quantity:item.quantity+delta}));cartStatus.textContent=removing?'محصول از سبد خرید حذف شد.':'سبد روی سرور ذخیره شد.';}catch(e){cartStatus.textContent=e.message;b.disabled=false;}});if(text==='+')tools.append(node('output',faDigits(item.quantity),'cart-quantity'));tools.append(b);}
    row.append(copy,tools);cartItemsElement.append(row);
   }
   updateCheckoutReview();
  };
  addToCart=async(title,quantity=1,gender=null,color='',size='')=>{
-  try{if(!state.ready)throw Error('دریافت اطلاعات فروشگاه هنوز کامل نشده است.');const p=findProduct(title,gender),v=p?.server.variants.find(x=>p.category!=='clothing'||(x.color===color&&x.size===size));if(!v)throw Error('ابتدا رنگ و اندازه را انتخاب کنید.');const old=state.cart.items.find(i=>i.variantId===v.id);applyCart(await api('cart',{variantId:v.id,quantity:(old?.quantity||0)+quantity}));closeProductModal();openCart();cartStatus.textContent='محصول به سبد ذخیره‌شده در سرور اضافه شد.';}catch(e){notify(e.message);productModalStatus.textContent=e.message;}
+  try{if(!state.ready)throw Error('دریافت اطلاعات فروشگاه هنوز کامل نشده است.');const p=findProduct(title,gender),v=p?.category==='clothing'?p.server.variants.find(x=>x.color===color&&x.size===size):defaultVariant(p);if(!v)throw Error('ابتدا رنگ و اندازه را انتخاب کنید.');if(v.stock<1)throw Error('این محصول ناموجود است.');const old=state.cart.items.find(i=>i.variantId===v.id);applyCart(await api('cart',{variantId:v.id,quantity:(old?.quantity||0)+quantity}));closeProductModal();openCart();cartStatus.textContent='محصول به سبد ذخیره‌شده در سرور اضافه شد.';}catch(e){notify(e.message);productModalStatus.textContent=e.message;}
  };
  updateClothingStock=()=>{if(activeProduct?.category!=='clothing')return;const v=selectedVariant(),available=Boolean(v&&v.stock>0);const text=!v?'رنگ و اندازه را انتخاب کنید.':available?'موجود · '+money(v.price):'این گزینه ناموجود است.';document.getElementById('clothing-stock').textContent=text;productModalStatus.textContent=text;productModalStatus.classList.toggle('is-unavailable',!available);productModalAdd.disabled=!available;};
  ['clothing-color','clothing-size'].forEach(id=>document.getElementById(id).addEventListener('change',()=>updateClothingStock()));
@@ -58,17 +81,23 @@ if(document.documentElement.dataset.storeApi==='true'){
    if(Array.isArray(sizes))sizes.slice(0,20).forEach(row=>{const tr=node('tr');[row.size,row.width,row.length].forEach(v=>tr.append(node('td',String(v??'—'))));rows.append(tr);});
    const specs=document.getElementById('clothing-specs');specs.replaceChildren();for(const [key,value] of Object.entries(p.server.attributes).filter(([key,value])=>!['sizeChart','mark','tag'].includes(key)&&typeof value==='string'))specs.append(node('li',key+' : '+value));
    if(!specs.childElementCount)specs.append(node('li','مشخصات تکمیلی این محصول هنوز ثبت نشده است.'));updateClothingStock();
-  }else{const v=p.server.variants[0];productModalStatus.textContent=v&&v.stock>0?'موجود · '+money(v.price):'ناموجود';productModalAdd.disabled=!v||v.stock<1;}
+  }else{const v=defaultVariant(p),available=Boolean(v&&v.stock>0);productModalStatus.textContent=available?'موجود · '+money(v.price):'ناموجود';productModalStatus.classList.toggle('is-unavailable',!available);productModalAdd.disabled=!available;}
   const nutrition=document.getElementById('product-nutrition-panel');if(p.category==='supplements'){const facts=p.server.attributes.nutrition;nutrition.hidden=!facts;if(facts){const keys=['calories','protein','carbohydrates','sugars','fat','servingSize'];nutrition.querySelectorAll('li b').forEach((value,index)=>value.textContent=String(facts[keys[index]]??'ثبت نشده'));}}
   const images=p.server.images,thumbs=document.getElementById('product-modal-thumbnails');thumbs.replaceChildren();
-  if(images.length){const show=image=>{const img=node('img');img.src=image.path;img.alt=image.alt;img.style.width='100%';img.style.height='100%';img.style.objectFit='contain';productModalMedia.replaceChildren(img);};show(images[0]);images.forEach((image,index)=>{const b=node('button',String(index+1),'product-modal-thumb');b.type='button';b.setAttribute('aria-label',image.alt);b.addEventListener('click',()=>show(image));thumbs.append(b);});}
+  if(images.length){
+   const show=index=>{const image=images[index],img=node('img');img.src=image.path;img.alt=image.alt||p.english;img.style.width='100%';img.style.height='100%';img.style.objectFit='contain';productModalMedia.replaceChildren(img);[...thumbs.children].forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));};
+   images.forEach((image,index)=>{const label=image.alt||p.english+' · تصویر '+faDigits(index+1),b=node('button',undefined,'product-modal-thumb'),preview=node('img');b.type='button';b.setAttribute('aria-label','نمایش '+label);b.title=label;preview.src=image.path;preview.alt='';preview.loading='lazy';preview.decoding='async';b.append(preview);b.addEventListener('click',()=>show(index));thumbs.append(b);});show(0);
+  }
  };
  function productCard(p){
   const card=node('article',undefined,'product-card'),photo=node('div',undefined,'product-photo product-photo--'+p.category);photo.tabIndex=0;photo.setAttribute('role','button');photo.setAttribute('aria-label','جزئیات '+p.english);photo.dataset.openProduct=p.english;photo.dataset.gender=p.gender||'';
   if(p.server.images.length){const img=node('img');img.src=p.server.images[0].path;img.alt=p.server.images[0].alt;img.loading='lazy';img.style.width='100%';img.style.height='100%';img.style.objectFit='contain';photo.append(img);}else{const object=node('div',undefined,'product-object');object.append(node('span',p.mark||p.english));photo.append(object);}
   const info=node('div',undefined,'product-info');info.dir='ltr';info.append(node('div',p.category==='clothing'?(p.gender==='men'?"MEN'S SPORTSWEAR":"WOMEN'S SPORTSWEAR"):p.category.toUpperCase(),'product-brand'),node('h3',p.english,'product-title'),node('div',p.subtitle,'product-subtitle'));
-  const bottom=node('div',undefined,'product-bottom'),priceEl=node('span',p.server.variants.length?money(Math.min(...p.server.variants.map(v=>v.price))):'قیمت ثبت نشده','product-subtitle');priceEl.lang='fa';bottom.append(priceEl);
+  const bottom=node('div',undefined,'product-bottom'),priceEl=node('span',undefined,'product-price');priceEl.lang='fa';priceEl.dir='rtl';
+  if(p.server.variants.length){const amount=node('bdi',tomanFormatter.format(Math.min(...p.server.variants.map(v=>v.price))/10),'product-price-amount');amount.dir='ltr';priceEl.append(amount,node('span','تومان','product-price-currency'));}
+  else{priceEl.textContent='قیمت ثبت نشده';priceEl.classList.add('product-price--empty');}bottom.append(priceEl);
   if(p.server.isDemo)bottom.append(node('small','نمونه؛ قابل فروش واقعی نیست'));
+  if(p.category!=='clothing'){const stock=node('span',p.inStock?'موجود':'ناموجود','stock-status '+(p.inStock?'stock-status--available':'stock-status--unavailable'));stock.lang='fa';stock.dir='rtl';bottom.append(stock);}
   const add=node('button','افزودن به سبد خرید','add-button');add.type='button';add.dataset.add=p.english;add.dataset.gender=p.gender||'';add.disabled=p.category!=='clothing'&&!p.inStock;bottom.append(add);info.append(bottom);card.append(photo,info);return card;
  }
  drawProducts=()=>{
@@ -87,22 +116,68 @@ if(document.documentElement.dataset.storeApi==='true'){
  addressForm.addEventListener('submit',async e=>{e.preventDefault();e.stopImmediatePropagation();if(!addressForm.reportValidity())return;const data=Object.fromEntries(new FormData(addressForm));if(pickedCoordinates)data.coordinates=pickedCoordinates;const status=document.getElementById('account-map-status');status.textContent='در حال ذخیرهٔ نشانی…';try{const result=await api('addresses'+(editingAddressId?'/'+editingAddressId:''),data,editingAddressId?'PATCH':'POST');state.profile.addresses=result.addresses;savedAddresses=result.addresses;selectedAddressId=savedAddresses.find(a=>a.selected)?.id??null;state.profile.selectedAddressId=selectedAddressId;closeAddressEditor();document.getElementById('address-book-status').textContent='نشانی روی سرور ذخیره شد.';}catch(error){status.textContent=error.message;}},true);
  addressList.addEventListener('click',async e=>{const b=e.target.closest('[data-select-address]');if(!b)return;e.preventDefault();e.stopImmediatePropagation();try{const data=await api('addresses/'+b.dataset.selectAddress,{select:true},'PATCH');state.profile.addresses=data.addresses;savedAddresses=data.addresses;selectedAddressId=b.dataset.selectAddress;state.profile.selectedAddressId=selectedAddressId;renderAddressList();}catch(error){notify(error.message);}},true);
  updateCheckoutReview=()=>{
-  if(!checkoutMode)return;resetCheckoutConfirmation();state.quote=null;
+  if(!checkoutMode)return;resetCheckoutConfirmation();state.quote=null;state.quoteRevision++;
   const a=savedAddresses.find(a=>a.id===selectedAddressId);document.getElementById('checkout-address-summary').textContent=a?[a.province,a.city,a.street,'پلاک '+a.plate,'واحد '+a.unit].join('، '):'نشانی تحویل را انتخاب کنید.';
   const lines=document.getElementById('checkout-lines');lines.replaceChildren();cartItems.forEach(i=>{const row=node('div',undefined,'checkout-line');row.append(node('strong',cartTitle(i)),node('span',faDigits(i.quantity)+' × '+money(i.unitPrice)));lines.append(row);});
   document.getElementById('checkout-count').textContent=faDigits(cartCount);document.getElementById('checkout-total').textContent='در انتظار محاسبهٔ ارسال';document.getElementById('checkout-cart-code').textContent='پس از ثبت سفارش صادر می‌شود';
-  let controls=document.getElementById('server-checkout-controls');if(!controls){controls=node('div');controls.id='server-checkout-controls';const shipping=node('select');shipping.id='server-shipping';shipping.setAttribute('aria-label','روش ارسال');shipping.addEventListener('change',()=>updateCheckoutReview());const coupon=node('input');coupon.id='server-coupon';coupon.placeholder='کد تخفیف (اختیاری)';coupon.maxLength=40;const apply=node('button','محاسبهٔ نهایی');apply.type='button';apply.addEventListener('click',requestQuote);controls.append(node('p','روش ارسال و کد تخفیف'),shipping,coupon,apply);lines.after(controls);}
-  const select=controls.querySelector('select');if(!select.options.length){select.add(new Option('انتخاب روش ارسال',''));state.shipping.forEach(s=>{if(!s.quote_required)select.add(new Option(s.name+' · '+money(s.fee),s.id));});}
+  let controls=document.getElementById('server-checkout-controls');if(!controls){controls=node('div');controls.id='server-checkout-controls';const shipping=node('select');shipping.id='server-shipping';shipping.setAttribute('aria-label','روش ارسال');shipping.addEventListener('change',()=>updateCheckoutReview());const apply=node('button','محاسبهٔ نهایی');apply.id='server-quote-button';apply.type='button';apply.addEventListener('click',requestQuote);const message=node('p',undefined,'checkout-quote-feedback');message.id='server-quote-status';message.setAttribute('role','status');message.setAttribute('aria-live','polite');controls.append(node('p','روش ارسال'),shipping,apply,message);lines.after(controls);}
+  const select=controls.querySelector('select'),previousShipping=select.value;select.replaceChildren();select.add(new Option('انتخاب روش ارسال',''));state.shipping.forEach(s=>{if(!s.quote_required)select.add(new Option(s.name+' · '+money(s.fee),s.id));});if([...select.options].some(o=>o.value===previousShipping))select.value=previousShipping;
+  const shippingReady=state.shipping.some(s=>!s.quote_required);select.disabled=!shippingReady;document.getElementById('server-quote-status').textContent=shippingReady?'روش ارسال را انتخاب کنید و محاسبهٔ نهایی را بزنید.':'محاسبهٔ نهایی هنوز ممکن نیست: روش ارسال و هزینهٔ آن در تنظیمات فروشگاه فعال نشده است. تیک تأیید پس از محاسبهٔ موفق فعال می‌شود.';
   document.getElementById('checkout-confirm').disabled=true;document.getElementById('checkout-finalize').disabled=true;document.getElementById('checkout-finalize').textContent='ثبت سفارش و ادامهٔ پرداخت';
   document.getElementById('checkout-status').textContent=state.cart.pendingOrder?'سفارش '+state.cart.pendingOrder.code+' در انتظار پرداخت است. برای مشاهده یا لغو به تاریخچهٔ سفارش‌ها بروید.':'درگاه پرداخت غیرفعال است. ثبت سفارش نیز به فعال‌بودن فروشگاه و هزینهٔ مشخص ارسال نیاز دارد.';
  };
  async function requestQuote(){
-  state.quote=null;document.getElementById('checkout-confirm').disabled=true;document.getElementById('checkout-finalize').disabled=true;
-  try{if(state.cart.pendingOrder)throw Error('ابتدا سفارش در انتظار پرداخت را از تاریخچه مدیریت کنید.');const input={addressId:selectedAddressId,shippingId:Number(document.getElementById('server-shipping').value),coupon:document.getElementById('server-coupon').value};if(!selectedAddressId||!input.shippingId)throw Error('نشانی و روش ارسال را انتخاب کنید.');const data=await api('checkout/quote',input);state.quote={...input,amount:data.quote.total,key:crypto.randomUUID()};document.getElementById('checkout-total').textContent=money(data.quote.total);document.getElementById('checkout-status').textContent='مبلغ شامل ارسال و مالیات است. درگاه هنوز غیرفعال است.';document.getElementById('checkout-confirm').disabled=false;}catch(error){document.getElementById('checkout-status').textContent=error.message;}
+  const revision=++state.quoteRevision,button=document.getElementById('server-quote-button'),feedback=document.getElementById('server-quote-status'),confirmation=document.getElementById('checkout-confirm');
+  state.quote=null;confirmation.checked=false;confirmation.disabled=true;document.getElementById('checkout-finalize').disabled=true;
+  const report=message=>{feedback.textContent=message;document.getElementById('checkout-status').textContent=message;};
+  button.disabled=true;button.textContent='در حال محاسبه…';report('در حال بررسی مبلغ، موجودی و هزینهٔ ارسال…');
+  try{
+   if(state.cart.pendingOrder)throw Error('ابتدا سفارش در انتظار پرداخت را از تاریخچه مدیریت کنید.');
+   if(!selectedAddressId)throw Error('ابتدا نشانی تحویل را انتخاب کنید.');
+   if(!state.shipping.some(s=>!s.quote_required))throw Error('هیچ روش ارسال با هزینهٔ مشخص فعال نیست. مدیر فروشگاه باید روش ارسال و هزینهٔ آن را تنظیم و فعال کند.');
+   const input={addressId:selectedAddressId,shippingId:Number(document.getElementById('server-shipping').value)};
+   if(!input.shippingId)throw Error('روش ارسال را از فهرست انتخاب کنید.');
+   const data=await api('checkout/quote',input);if(revision!==state.quoteRevision)return;
+   state.quote={...input,amount:data.quote.total,key:crypto.randomUUID()};document.getElementById('checkout-total').textContent=money(data.quote.total);report('مبلغ نهایی محاسبه شد. اکنون می‌توانید تیک تأیید آدرس و سفارش را بزنید. درگاه پرداخت هنوز غیرفعال است.');confirmation.disabled=false;
+  }catch(error){if(revision===state.quoteRevision){report(error.message);feedback.scrollIntoView({block:'nearest'});}}
+  finally{button.disabled=false;button.textContent='محاسبهٔ نهایی';}
  }
- document.getElementById('checkout-finalize').addEventListener('click',async e=>{e.preventDefault();e.stopImmediatePropagation();const q=state.quote;if(!q||!document.getElementById('checkout-confirm').checked)return;const button=e.currentTarget;button.disabled=true;try{const data=await api('orders/create',{addressId:q.addressId,shippingId:q.shippingId,coupon:q.coupon,idempotencyKey:q.key});const o=data.order;document.getElementById('checkout-status').textContent='سفارش '+o.code+' در انتظار پرداخت ثبت شد. هیچ پرداختی انجام نشده و درگاه غیرفعال است.';state.quote=null;state.orders.unshift(o);applyCart(await api('cart'));}catch(error){document.getElementById('checkout-status').textContent=error.message;button.disabled=false;}},true);
- document.getElementById('server-coupon')?.addEventListener('input',()=>{state.quote=null;});
+ document.getElementById('checkout-finalize').addEventListener('click',async e=>{e.preventDefault();e.stopImmediatePropagation();const q=state.quote;if(!q||!document.getElementById('checkout-confirm').checked)return;const button=e.currentTarget;button.disabled=true;try{const data=await api('orders/create',{addressId:q.addressId,shippingId:q.shippingId,idempotencyKey:q.key});const o=data.order;document.getElementById('checkout-status').textContent='سفارش '+o.code+' در انتظار پرداخت ثبت شد. هیچ پرداختی انجام نشده و درگاه غیرفعال است.';state.quote=null;state.orders.unshift(o);applyCart(await api('cart'));}catch(error){document.getElementById('checkout-status').textContent=error.message;button.disabled=false;}},true);
  const priorMapKey=readNeshanKey;readNeshanKey=key=>key===NESHAN_SERVICE_KEY_STORAGE?'':priorMapKey(key);
+ document.getElementById('address-line').placeholder='پس از انتخاب نقطه روی نقشه، نشانی اینجا نمایش داده می‌شود';
+ document.getElementById('map-picker-confirm').addEventListener('click',async event=>{
+  event.preventDefault();event.stopImmediatePropagation();if(!draftCoordinates)return;
+  const point=pickedCoordinates={...draftCoordinates},status=document.getElementById('account-map-status');
+  const province=addressForm.elements.namedItem('province'),city=addressForm.elements.namedItem('city'),street=addressForm.elements.namedItem('street');
+  if(mapPlace?.province)province.value=mapPlace.province;if(mapPlace?.city)city.value=mapPlace.city;
+  const previous=[province.value,city.value,street.value];closeMapPicker();const session=mapSession;
+  status.textContent='موقعیت روی نقشه ثبت شد.';focusAddressDetails('address-line');
+  status.textContent='موقعیت ثبت شد؛ در حال دریافت نشانی…';
+  try{
+   const result=await api('maps/reverse',{lat:point.lat,lng:point.lng});
+   if(mapSession!==session||addressForm.hidden||pickedCoordinates!==point)return;
+   [province,city,street].forEach((field,index)=>{const value=result.address[['province','city','street'][index]];if(value&&field.value===previous[index])field.value=value;});
+   status.textContent='موقعیت و نشانی دریافت شد؛ متن نشانی را بررسی و پلاک، واحد و کد پستی را تکمیل کنید.';
+  }catch(error){if(mapSession===session&&!addressForm.hidden&&pickedCoordinates===point)status.textContent=error.message;}
+ },true);
+ function enableLocalMapWebSetup(){
+  if(!['127.0.0.1','localhost','[::1]'].includes(location.hostname))return;
+  document.documentElement.classList.add('local-map-web-setup');
+  mapKeySetup.querySelector('p').textContent='تنظیم نقشه در این مرورگر: فقط کلید «نقشه وب» نشان را وارد کنید. کلید سرویس‌ها را اینجا وارد نکنید.';
+  const privateInput=document.getElementById('neshan-service-key');privateInput.value='';privateInput.disabled=true;privateInput.hidden=true;
+  const webInput=document.getElementById('neshan-map-key');webInput.placeholder='کلید نقشه وب نشان (web.…)';webInput.value=readNeshanKey(NESHAN_MAP_KEY_STORAGE);
+  const save=document.getElementById('save-neshan-key');save.textContent='ذخیره و نمایش نقشه';
+  mapPicker.querySelector('.map-picker-head').after(mapKeySetup);
+  if(!document.getElementById('local-map-service-setup')){const link=node('a','تنظیم کلید سرویس تبدیل موقعیت به نشانی (ورود مدیر)');link.id='local-map-service-setup';link.href='/local-map-setup/';link.target='_blank';link.rel='noopener';mapKeySetup.append(link);}
+  save.addEventListener('click',async event=>{
+   event.preventDefault();event.stopImmediatePropagation();const key=webInput.value.trim();
+   if(!key.startsWith('web.')||key.length>512){showMapMessage('کلید «نقشه وب» را از پنل نشان کپی کنید؛ کلید سرویس‌ها مناسب این کادر نیست.');webInput.focus();return;}
+   save.disabled=true;
+   try{localStorage.setItem(NESHAN_MAP_KEY_STORAGE,key);if(accountMap){accountMap.remove();accountMap=null;accountMarker=null;}await loadAddressMap(mapSession);}
+   catch{showMapMessage('ذخیرهٔ کلید در مرورگر ممکن نشد.');}
+   finally{save.disabled=false;}
+  },true);
+ }
  const preview=document.getElementById('checkout-success-preview');if(preview)preview.hidden=true;
  paidOrdersForAccount=()=>state.orders;
  renderOrderHistory=()=>{
@@ -116,11 +191,10 @@ if(document.documentElement.dataset.storeApi==='true'){
   if(!bought.size)reviewList.append(node('p','پس از تحویل سفارش می‌توانید برای محصول دیدگاه ثبت کنید.','account-empty'));
   bought.forEach((item,id)=>{const form=node('form',undefined,'account-review-card'),rating=node('select'),comment=node('textarea'),status=node('p');rating.setAttribute('aria-label','امتیاز محصول');rating.required=true;rating.add(new Option('انتخاب امتیاز',''));[1,2,3,4,5].forEach(n=>rating.add(new Option('★'.repeat(n),n)));comment.maxLength=2000;comment.required=true;comment.placeholder='تجربهٔ استفاده از محصول';const previous=state.reviews.find(r=>r.product_id===id);if(previous){rating.value=String(previous.rating);comment.value=previous.comment;}const save=node('button','ثبت امتیاز و دیدگاه');save.type='submit';if(item.image){const img=node('img');img.src=item.image;img.alt=item.title;img.width=70;img.height=70;form.append(img);}form.append(node('h3',item.title),rating,comment,save,status);form.addEventListener('submit',async e=>{e.preventDefault();e.stopPropagation();save.disabled=true;try{const saved=await api('reviews',{productId:id,rating:Number(rating.value),comment:comment.value});state.reviews=saved.reviews;status.textContent='دیدگاه ذخیره شد و پس از بررسی منتشر می‌شود.';}catch(error){status.textContent=error.message;}finally{save.disabled=false;}});reviewList.append(form);});
  };
- document.addEventListener('input',e=>{if(e.target.id==='server-coupon'){state.quote=null;document.getElementById('checkout-confirm').checked=false;document.getElementById('checkout-confirm').disabled=true;document.getElementById('checkout-finalize').disabled=true;}});
  async function boot(){
   products.splice(0);cartItems=[];drawProducts();updateCartView();
   try{
-   const session=await api('auth/session');let offset=0,all=[];for(;;){const data=await api('products?offset='+offset);all.push(...data.products);offset+=data.products.length;if(offset>=data.total||!data.products.length)break;}
+   const session=await api('auth/session');state.mapsReady=Boolean(session.mapServicesAvailable);if(session.localTestLoginAvailable)enableLocalTestLogin();if(session.localTestLoginAvailable||session.user?.isTest)enableLocalMapWebSetup();let offset=0,all=[];for(;;){const data=await api('products?offset='+offset);all.push(...data.products);offset+=data.products.length;if(offset>=data.total||!data.products.length)break;}
    state.catalog=all;products.splice(0,products.length,...all.map(frontProduct));state.shipping=(await api('shipping')).methods;state.ready=true;
    if(session.authenticated){authenticatedUser=session.user;await refreshAccount();acceptVerifiedUser(session.user,false);}else authenticatedUser=null;
    applyCart(await api('cart'));drawProducts();

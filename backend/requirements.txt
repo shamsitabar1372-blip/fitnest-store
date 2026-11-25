@@ -1,4 +1,5 @@
 Django==5.2.19
+truststore==0.10.4; sys_platform == 'win32'
 whitenoise==6.12.0
 Pillow==12.3.0
 psycopg[binary]==3.3.9

@@ -14,7 +14,7 @@ for folder in ['backend','docs','deploy','design/admin-mockups','.github/workflo
         if p.name.startswith('.env') or p.suffix in ['.sqlite3','.pyc','.log','.dump']:continue
         names.add(p.relative_to(ROOT).as_posix())
 for p in (ROOT/'scripts').glob('*'):
-    if p.is_file() and (p.suffix=='.ps1' or p.name in ['audit-store-backend.py','package-backend.py']): names.add(p.relative_to(ROOT).as_posix())
+    if p.is_file() and (p.suffix=='.ps1' or p.name in ['audit-store-backend.py','package-backend.py','connect-neshan.py','test-map-address.cjs','test-checkout-quote.cjs','test-admin-filters.cjs','check-django-http.py']): names.add(p.relative_to(ROOT).as_posix())
 archive=ROOT/'output/FitNestPro-Django-source.zip';archive.parent.mkdir(exist_ok=True)
 with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED) as z:
     for name in sorted(names):

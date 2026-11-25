@@ -1,0 +1,37 @@
+/* Compact card prices; versioned URL prevents stale cached typography. */
+html[data-store-api] .product-card .product-info .product-price-amount {
+  font-family: 'Vazirmatn', Tahoma, sans-serif;
+  font-size: 13px !important;
+  font-weight: 800;
+  line-height: 1.6;
+  letter-spacing: 0 !important;
+}
+html[data-store-api] .product-card .product-info .product-price-currency {
+  font-size: 10px !important;
+  font-weight: 600;
+}
+html[data-store-api] .product-card .product-info .product-price {
+  gap: 4px;
+  margin-bottom: 9px;
+}
+
+/* Destructive action is distinct and separated from quantity controls. */
+html[data-store-api] .cart-line-tools .cart-remove-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  padding: 0;
+  margin-left: 14px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e16b7d70;
+  border-radius: 8px;
+  background: #c3425720;
+  color: #ff869b;
+  cursor: pointer;
+  transition: background .18s, border-color .18s;
+}
+html[data-store-api] .cart-remove-icon svg { width: 20px; height: 20px; pointer-events: none; }
+html[data-store-api] .cart-line-tools .cart-remove-icon:hover { background: #c342573d; border-color: #ff869b; }
+html[data-store-api] .cart-remove-icon:focus-visible { outline: 2px solid #ffb1bf; outline-offset: 3px; }
+html[data-store-api] .cart-remove-icon:disabled { opacity: .45; cursor: wait; }

@@ -24,6 +24,7 @@ def configured_gateway():
 @transaction.atomic
 def begin_payment(order, callback_url):
     order=Order.objects.select_for_update().get(pk=order.pk)
+    if order.customer.username=='local-test-customer': raise ShopError('سفارش آزمایشی قابل پرداخت واقعی نیست.',403)
     if not settings.PAYMENTS_ENABLED: return configured_gateway()
     if order.status!='pending' or order.expires_at<=timezone.now(): raise ShopError('سفارش قابل پرداخت نیست.',409)
     gateway=configured_gateway()
@@ -37,6 +38,7 @@ def verify_payment(authority, gateway):
     p=Payment.objects.select_related('order').get(authority=authority)
     cart=Cart.objects.select_for_update().filter(customer_id=p.order.customer_id).first()
     order=Order.objects.select_for_update().get(pk=p.order_id)
+    if order.customer.username=='local-test-customer': raise ShopError('پرداخت واقعی برای سفارش آزمایشی مجاز نیست.',403)
     p=Payment.objects.select_for_update().get(pk=p.pk)
     if p.verified: return order
     if order.status!='pending' or order.expires_at<=timezone.now(): raise ShopError('سفارش منقضی یا بسته شده؛ نیازمند بررسی مالی است.',409)

@@ -3,6 +3,7 @@ from datetime import timedelta
 import secrets, uuid
 from django.db import transaction
 from django.utils import timezone
+from django.conf import settings
 from django.db.models import Sum
 from .models import Cart, CartLine, Variant, Coupon, Order, OrderLine, AuditEvent, StoreSettings
 
@@ -97,6 +98,7 @@ def quote(cart, shipping, customer, code=''):
 
 @transaction.atomic
 def checkout(cart, customer, address, shipping, key, code=''):
+    if customer.username=='local-test-customer' and not settings.LOCAL: raise ShopError('حساب آزمایشی در محیط اصلی قابل استفاده نیست.',403)
     if address.customer_id != customer.pk or cart.customer_id != customer.pk: raise ShopError('دسترسی به سبد یا نشانی مجاز نیست.',403)
     Cart.objects.select_for_update().get(pk=cart.pk)
     previous=Order.objects.filter(customer=customer,idempotency_key=key).first()
